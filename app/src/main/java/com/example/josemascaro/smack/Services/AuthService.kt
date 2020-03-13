@@ -15,6 +15,7 @@ import org.json.JSONObject
 /**
  * Created by josemascaro on 3/11/20.
  */
+
 object AuthService {
 
     var isLoggedIn = false

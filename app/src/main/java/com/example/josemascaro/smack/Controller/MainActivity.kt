@@ -18,11 +18,15 @@ import com.example.josemascaro.smack.R
 import com.example.josemascaro.smack.Services.AuthService
 import com.example.josemascaro.smack.Services.UserDataService
 import com.example.josemascaro.smack.Utilities.BROADCAST_USER_DATA_CHANGE
+import com.example.josemascaro.smack.Utilities.SOCKET_URL
+import io.socket.client.IO
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.nav_header_main.*
 
 class MainActivity : AppCompatActivity(){
+
+    val socket = IO.socket(SOCKET_URL)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,9 +39,25 @@ class MainActivity : AppCompatActivity(){
         toggle.syncState()
         hideKeyboard()
 
+
+    }
+
+
+    override fun onResume() {
+        super.onResume()
         LocalBroadcastManager.getInstance(this).registerReceiver(userDataChangeReceiver,
                 IntentFilter(BROADCAST_USER_DATA_CHANGE))
+        socket.connect()
     }
+    
+
+    override fun onDestroy() {
+        socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+        super.onDestroy()
+    }
+
+
 
     private val userDataChangeReceiver = object : BroadcastReceiver (){
         override fun onReceive(context : Context?, intent : Intent?) {
@@ -92,12 +112,12 @@ class MainActivity : AppCompatActivity(){
                         val channelName = nameTextField.text.toString()
                         val channelDesc = descTextField.text.toString()
 
-                        hideKeyboard()
+                        socket.emit("newChannel", channelName, channelDesc)
+
 
                     }
                     .setNegativeButton("Cancel"){dialogInterface, i ->
 
-                        hideKeyboard()
 
                     }
                     .show()
@@ -107,6 +127,7 @@ class MainActivity : AppCompatActivity(){
 
     fun sendMessageBtnClicked(view: View){
 
+        hideKeyboard()
     }
 
     fun hideKeyboard(){
