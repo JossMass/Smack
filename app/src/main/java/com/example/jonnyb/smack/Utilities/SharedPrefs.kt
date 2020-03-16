@@ -2,6 +2,7 @@ package com.example.jonnyb.smack.Utilities
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.android.volley.RequestQueue
 import com.android.volley.toolbox.Volley
 
 /**
@@ -28,5 +29,5 @@ class SharedPrefs(context: Context) {
         get() = prefs.getString(USER_EMAIL, "")
         set(value) = prefs.edit().putString(USER_EMAIL, value).apply()
 
-    val requestQueue = Volley.newRequestQueue(context)
+    val requestQueue: RequestQueue = Volley.newRequestQueue(context)
 }
